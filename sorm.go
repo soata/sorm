@@ -37,19 +37,17 @@ func NewWithError() (*gorm.DB, error) {
 	driver := os.Getenv("DB_DRIVER_STRING")
 	connect := os.Getenv("DB_CONNECTION_STRING")
 
-	isLocal := os.Getenv("ENVIROMENT") == "LOCAL"
-	if isLocal {
-		connect = os.Getenv("DB_CONNECTION_STRING_LOCAL")
-	}
-
 	db, err := gorm.Open(driver, connect)
 	if err != nil {
 		return db, fmt.Errorf("%s : %s (%s)", driver, connect, err.Error())
 	}
 
-	if isLocal {
+	isProduct := os.Getenv("ENVIROMENT") == "PRODUCTION"
+	// StackDriverでは制御文字が表示できないので無効化
+	if isProduct {
 		db.SetLogger(plogger.DefaultPlainLogger)
 	}
+
 	db.DB().SetConnMaxLifetime(time.Minute * 1)
 	db.DB().SetMaxIdleConns(4)
 
@@ -61,9 +59,7 @@ func NewWithError() (*gorm.DB, error) {
 func NewProd() (*gorm.DB, error) {
 
 	driver := os.Getenv("DB_DRIVER_STRING")
-
 	connect := os.Getenv("DB_CONNECTION_STRING_PROD")
-	fmt.Println(driver, "con:", connect)
 
 	db, err := gorm.Open(driver, connect)
 	if err != nil {
