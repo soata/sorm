@@ -2,7 +2,7 @@ package sorm
 
 import (
 	"fmt"
-	"narabel/plogger"
+	"github.com/soata/plogger"
 	"os"
 	"time"
 
